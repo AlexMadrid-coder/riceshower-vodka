@@ -127,6 +127,8 @@ function AutomationFlowPageContent() {
           {
             source: connectingNodeId.current!,
             target: newNode.id,
+            sourceHandle: null,
+            targetHandle: null,
           },
           eds,
         ),
