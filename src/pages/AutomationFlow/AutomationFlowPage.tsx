@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import {
   ReactFlow,
   addEdge,
@@ -14,9 +14,14 @@ import {
   applyNodeChanges,
   applyEdgeChanges,
   type NodeMouseHandler,
+  type OnConnectEnd,
+  useReactFlow,
+  ReactFlowProvider,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import AutomationNode from '../../components/AutomationNode/AutomationNode';
+import EdgeDeleteButton from '../../components/EdgeDeleteButton/EdgeDeleteButton';
+import NodeSelector from '../../components/NodeSelector/NodeSelector';
 import FlowSidebar from '../../components/FlowSidebar/FlowSidebar';
 import NodeEditor from '../../components/NodeEditor/NodeEditor';
 import JsonViewer from '../../components/JsonViewer/JsonViewer';
@@ -26,6 +31,10 @@ import './AutomationFlowPage.css';
 
 const nodeTypes = {
   automationNode: AutomationNode,
+};
+
+const edgeTypes = {
+  default: EdgeDeleteButton,
 };
 
 const INITIAL_NODES: Node<AutomationNodeData>[] = [
@@ -43,14 +52,17 @@ const INITIAL_NODES: Node<AutomationNodeData>[] = [
 
 const INITIAL_EDGES: Edge[] = [];
 
-function AutomationFlowPage() {
+function AutomationFlowPageContent() {
   const [nodes, setNodes] = useState<Node<AutomationNodeData>[]>(INITIAL_NODES);
   const [edges, setEdges] = useState<Edge[]>(INITIAL_EDGES);
   const [variables, setVariables] = useState<AutomationVariable[]>([]);
   const [nodeIdCounter, setNodeIdCounter] = useState(2);
   const [selectedNode, setSelectedNode] = useState<Node<AutomationNodeData> | null>(null);
   const [showJsonViewer, setShowJsonViewer] = useState(false);
+  const [nodeSelectorPosition, setNodeSelectorPosition] = useState<{ x: number; y: number } | null>(null);
+  const connectingNodeId = useRef<string | null>(null);
   const { theme, toggleTheme } = useTheme();
+  const { screenToFlowPosition } = useReactFlow();
 
   const onNodesChange = useCallback<OnNodesChange<Node<AutomationNodeData>>>(
     (changes) => {
@@ -67,6 +79,65 @@ function AutomationFlowPage() {
   const onConnect = useCallback<OnConnect>(
     (connection) => setEdges((eds) => addEdge(connection, eds)),
     [],
+  );
+
+  const onConnectEnd = useCallback<OnConnectEnd>(
+    (event, connectionState) => {
+      if (!connectionState.fromNode) return;
+
+      const targetIsPane = (event.target as HTMLElement)?.classList.contains('react-flow__pane');
+
+      if (targetIsPane && event instanceof MouseEvent) {
+        connectingNodeId.current = connectionState.fromNode.id;
+        setNodeSelectorPosition({ x: event.clientX, y: event.clientY });
+      }
+    },
+    [],
+  );
+
+  const handleSelectNodeType = useCallback(
+    (nodeType: NodeType) => {
+      if (!nodeSelectorPosition || !connectingNodeId.current) return;
+
+      const flowPosition = screenToFlowPosition({
+        x: nodeSelectorPosition.x,
+        y: nodeSelectorPosition.y,
+      });
+
+      const newNode: Node<AutomationNodeData> = {
+        id: String(nodeIdCounter),
+        type: 'automationNode',
+        position: flowPosition,
+        data: {
+          label: `${nodeType.charAt(0).toUpperCase() + nodeType.slice(1)} ${nodeIdCounter}`,
+          nodeType,
+          description: nodeType === 'action' ? 'Configure action' : undefined,
+          actionType: nodeType === 'action' ? 'Send Email' : undefined,
+          condition: nodeType === 'condition' ? {
+            variable: 'var1',
+            operator: '==',
+            value: 'true',
+          } : undefined,
+        },
+      };
+
+      setNodes((nds) => [...nds, newNode]);
+      setEdges((eds) =>
+        addEdge(
+          {
+            source: connectingNodeId.current!,
+            target: newNode.id,
+            sourceHandle: null,
+            targetHandle: null,
+          },
+          eds,
+        ),
+      );
+      setNodeIdCounter((c) => c + 1);
+      setNodeSelectorPosition(null);
+      connectingNodeId.current = null;
+    },
+    [nodeSelectorPosition, nodeIdCounter, screenToFlowPosition],
   );
 
   const handleAddNode = useCallback((nodeType: NodeType) => {
@@ -180,9 +251,11 @@ function AutomationFlowPage() {
             nodes={nodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            edgeTypes={edgeTypes}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onConnectEnd={onConnectEnd}
             onNodeClick={handleNodeClick}
             fitView
             defaultEdgeOptions={{
@@ -221,7 +294,26 @@ function AutomationFlowPage() {
           onClose={() => setShowJsonViewer(false)}
         />
       )}
+
+      {nodeSelectorPosition && (
+        <NodeSelector
+          position={nodeSelectorPosition}
+          onSelectNodeType={handleSelectNodeType}
+          onClose={() => {
+            setNodeSelectorPosition(null);
+            connectingNodeId.current = null;
+          }}
+        />
+      )}
     </div>
+  );
+}
+
+function AutomationFlowPage() {
+  return (
+    <ReactFlowProvider>
+      <AutomationFlowPageContent />
+    </ReactFlowProvider>
   );
 }
 

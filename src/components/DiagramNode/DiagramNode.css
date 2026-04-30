@@ -6,12 +6,51 @@
   min-width: 140px;
   text-align: center;
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+  position: relative;
 }
 
 .diagram-node:hover {
   border-color: var(--color-primary);
   box-shadow: var(--shadow-md);
+}
+
+.diagram-node--selected {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  transform: scale(1.02);
+}
+
+.diagram-node__delete {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  background: #ffffff;
+  color: #ef4444;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+  opacity: 0;
+  padding: 0;
+}
+
+.diagram-node:hover .diagram-node__delete {
+  opacity: 1;
+}
+
+.diagram-node__delete:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
 }
 
 .diagram-node__icon {

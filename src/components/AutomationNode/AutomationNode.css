@@ -6,6 +6,7 @@
   min-width: 180px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   transition: all 0.2s ease;
+  position: relative;
 }
 
 .automation-node:hover {
@@ -15,6 +16,39 @@
 .automation-node--selected {
   border-color: #3b82f6;
   box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  transform: scale(1.02);
+}
+
+.automation-node__delete {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid #ef4444;
+  background: #ffffff;
+  color: #ef4444;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: all 0.2s ease;
+  opacity: 0;
+  padding: 0;
+}
+
+.automation-node:hover .automation-node__delete {
+  opacity: 1;
+}
+
+.automation-node__delete:hover {
+  background: #ef4444;
+  color: white;
+  transform: scale(1.1);
 }
 
 .automation-node--start {

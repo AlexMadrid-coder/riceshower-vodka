@@ -16,12 +16,17 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import DiagramNode from '../../components/DiagramNode/DiagramNode';
+import EdgeDeleteButton from '../../components/EdgeDeleteButton/EdgeDeleteButton';
 import type { DiagramNodeData } from '../../utils/flowUtils';
 import { INITIAL_NODES, INITIAL_EDGES } from '../../utils/flowUtils';
 import './DiagramPage.css';
 
 const nodeTypes = {
   diagramNode: DiagramNode,
+};
+
+const edgeTypes = {
+  default: EdgeDeleteButton,
 };
 
 function DiagramPage() {
@@ -87,6 +92,7 @@ function DiagramPage() {
           nodes={nodes}
           edges={edges}
           nodeTypes={nodeTypes}
+          edgeTypes={edgeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
