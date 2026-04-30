@@ -13,10 +13,14 @@ import {
   type OnEdgesChange,
   applyNodeChanges,
   applyEdgeChanges,
+  type NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import AutomationNode from '../../components/AutomationNode/AutomationNode';
 import FlowSidebar from '../../components/FlowSidebar/FlowSidebar';
+import NodeEditor from '../../components/NodeEditor/NodeEditor';
+import JsonViewer from '../../components/JsonViewer/JsonViewer';
+import { useTheme } from '../../contexts/ThemeContext';
 import type { AutomationNodeData, AutomationVariable, NodeType } from '../../types/automation';
 import './AutomationFlowPage.css';
 
@@ -44,6 +48,9 @@ function AutomationFlowPage() {
   const [edges, setEdges] = useState<Edge[]>(INITIAL_EDGES);
   const [variables, setVariables] = useState<AutomationVariable[]>([]);
   const [nodeIdCounter, setNodeIdCounter] = useState(2);
+  const [selectedNode, setSelectedNode] = useState<Node<AutomationNodeData> | null>(null);
+  const [showJsonViewer, setShowJsonViewer] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
   const onNodesChange = useCallback<OnNodesChange<Node<AutomationNodeData>>>(
     (changes) => {
@@ -99,6 +106,20 @@ function AutomationFlowPage() {
     setVariables((vars) => vars.filter((v) => v.id !== id));
   }, []);
 
+  const handleUpdateNode = useCallback((nodeId: string, data: Partial<AutomationNodeData>) => {
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === nodeId
+          ? { ...node, data: { ...node.data, ...data } }
+          : node
+      )
+    );
+  }, []);
+
+  const handleNodeClick: NodeMouseHandler = useCallback((_event, node) => {
+    setSelectedNode(node as Node<AutomationNodeData>);
+  }, []);
+
   const stats = useMemo(
     () => ({
       nodes: nodes.length,
@@ -112,6 +133,7 @@ function AutomationFlowPage() {
     <div className="automation-flow-page">
       <FlowSidebar
         variables={variables}
+        nodes={nodes}
         onAddVariable={handleAddVariable}
         onDeleteVariable={handleDeleteVariable}
         onAddNode={handleAddNode}
@@ -125,16 +147,31 @@ function AutomationFlowPage() {
               Design your automation workflow
             </p>
           </div>
-          <div className="automation-flow-page__stats">
-            <span className="automation-flow-page__stat">
-              <strong>{stats.nodes}</strong> nodes
-            </span>
-            <span className="automation-flow-page__stat">
-              <strong>{stats.edges}</strong> connections
-            </span>
-            <span className="automation-flow-page__stat">
-              <strong>{stats.variables}</strong> variables
-            </span>
+          <div className="automation-flow-page__header-actions">
+            <div className="automation-flow-page__stats">
+              <span className="automation-flow-page__stat">
+                <strong>{stats.nodes}</strong> nodes
+              </span>
+              <span className="automation-flow-page__stat">
+                <strong>{stats.edges}</strong> connections
+              </span>
+              <span className="automation-flow-page__stat">
+                <strong>{stats.variables}</strong> variables
+              </span>
+            </div>
+            <button
+              className="automation-flow-page__theme-btn"
+              onClick={toggleTheme}
+              title={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
+            >
+              {theme === 'light' ? '🌙' : '☀️'}
+            </button>
+            <button
+              className="automation-flow-page__json-btn"
+              onClick={() => setShowJsonViewer(true)}
+            >
+              📄 View JSON
+            </button>
           </div>
         </div>
 
@@ -146,6 +183,7 @@ function AutomationFlowPage() {
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
+            onNodeClick={handleNodeClick}
             fitView
             defaultEdgeOptions={{
               animated: true,
@@ -165,6 +203,24 @@ function AutomationFlowPage() {
           </ReactFlow>
         </div>
       </div>
+
+      {selectedNode && (
+        <NodeEditor
+          node={selectedNode}
+          variables={variables}
+          onUpdateNode={handleUpdateNode}
+          onClose={() => setSelectedNode(null)}
+        />
+      )}
+
+      {showJsonViewer && (
+        <JsonViewer
+          nodes={nodes}
+          edges={edges}
+          variables={variables}
+          onClose={() => setShowJsonViewer(false)}
+        />
+      )}
     </div>
   );
 }

@@ -19,4 +19,8 @@ export interface AutomationNodeData extends Record<string, unknown> {
     operator?: string;
     value?: string;
   };
+  // Text content for the node
+  content?: string;
+  // Variables used in this node
+  usedVariables?: string[];
 }

@@ -1,9 +1,11 @@
 import { useState } from 'react';
-import type { AutomationVariable, NodeType } from '../../types/automation';
+import type { Node } from '@xyflow/react';
+import type { AutomationVariable, NodeType, AutomationNodeData } from '../../types/automation';
 import './FlowSidebar.css';
 
 interface FlowSidebarProps {
   variables: AutomationVariable[];
+  nodes: Node<AutomationNodeData>[];
   onAddVariable: (variable: Omit<AutomationVariable, 'id'>) => void;
   onDeleteVariable: (id: string) => void;
   onAddNode: (nodeType: NodeType) => void;
@@ -11,6 +13,7 @@ interface FlowSidebarProps {
 
 function FlowSidebar({
   variables,
+  nodes,
   onAddVariable,
   onDeleteVariable,
   onAddNode,
@@ -46,6 +49,12 @@ function FlowSidebar({
     { type: 'condition', label: 'Condition', icon: '❓', description: 'Conditional branch' },
     { type: 'end', label: 'End', icon: '🏁', description: 'End of flow' },
   ];
+
+  const getNodesUsingVariable = (variableId: string) => {
+    return nodes.filter((node) =>
+      node.data.usedVariables?.includes(variableId)
+    );
+  };
 
   return (
     <div className="flow-sidebar">
@@ -129,22 +138,30 @@ function FlowSidebar({
               {variables.length === 0 && (
                 <p className="flow-sidebar__empty">No variables yet</p>
               )}
-              {variables.map((variable) => (
-                <div key={variable.id} className="flow-sidebar__var-item">
-                  <div className="flow-sidebar__var-info">
-                    <div className="flow-sidebar__var-name">{variable.name}</div>
-                    <div className="flow-sidebar__var-type">
-                      {variable.type}: {String(variable.value)}
+              {variables.map((variable) => {
+                const nodesUsing = getNodesUsingVariable(variable.id);
+                return (
+                  <div key={variable.id} className="flow-sidebar__var-item">
+                    <div className="flow-sidebar__var-info">
+                      <div className="flow-sidebar__var-name">{variable.name}</div>
+                      <div className="flow-sidebar__var-type">
+                        {variable.type}: {String(variable.value)}
+                      </div>
+                      {nodesUsing.length > 0 && (
+                        <div className="flow-sidebar__var-usage">
+                          Used in: {nodesUsing.map(n => n.data.label).join(', ')}
+                        </div>
+                      )}
                     </div>
+                    <button
+                      className="flow-sidebar__delete-btn"
+                      onClick={() => onDeleteVariable(variable.id)}
+                    >
+                      ✕
+                    </button>
                   </div>
-                  <button
-                    className="flow-sidebar__delete-btn"
-                    onClick={() => onDeleteVariable(variable.id)}
-                  >
-                    ✕
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
