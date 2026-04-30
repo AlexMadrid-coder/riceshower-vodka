@@ -1,9 +1,15 @@
 import { memo } from 'react';
-import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
+import { Handle, Position, type NodeProps, type Node, useReactFlow } from '@xyflow/react';
 import type { AutomationNodeData } from '../../types/automation';
 import './AutomationNode.css';
 
-function AutomationNode({ data, selected }: NodeProps<Node<AutomationNodeData>>) {
+function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeData>>) {
+  const { deleteElements } = useReactFlow();
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    deleteElements({ nodes: [{ id }] });
+  };
   const getNodeIcon = () => {
     switch (data.nodeType) {
       case 'start':
@@ -28,6 +34,14 @@ function AutomationNode({ data, selected }: NodeProps<Node<AutomationNodeData>>)
       {data.nodeType !== 'start' && (
         <Handle type="target" position={Position.Left} />
       )}
+
+      <button
+        className="automation-node__delete"
+        onClick={handleDelete}
+        title="Delete node"
+      >
+        ×
+      </button>
 
       <div className="automation-node__header">
         <span className="automation-node__icon">{getNodeIcon()}</span>
