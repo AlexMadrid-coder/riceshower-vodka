@@ -26,7 +26,7 @@ function AutomationNode({ data, selected }: NodeProps<Node<AutomationNodeData>>)
   return (
     <div className={getNodeClass()}>
       {data.nodeType !== 'start' && (
-        <Handle type="target" position={Position.Top} />
+        <Handle type="target" position={Position.Left} />
       )}
 
       <div className="automation-node__header">
@@ -51,22 +51,22 @@ function AutomationNode({ data, selected }: NodeProps<Node<AutomationNodeData>>)
       )}
 
       {data.nodeType !== 'end' && (
-        <Handle type="source" position={Position.Bottom} />
+        <Handle type="source" position={Position.Right} />
       )}
 
       {data.nodeType === 'condition' && (
         <>
           <Handle
             type="source"
-            position={Position.Right}
+            position={Position.Top}
             id="true"
-            style={{ top: '50%', background: '#10b981' }}
+            style={{ left: '50%', background: '#10b981' }}
           />
           <Handle
             type="source"
-            position={Position.Left}
+            position={Position.Bottom}
             id="false"
-            style={{ top: '50%', background: '#ef4444' }}
+            style={{ left: '50%', background: '#ef4444' }}
           />
         </>
       )}

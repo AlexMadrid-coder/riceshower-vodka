@@ -12,6 +12,16 @@
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+[data-theme="dark"] {
+  --color-bg: #111827;
+  --color-surface: #1f2937;
+  --color-primary: #6366f1;
+  --color-primary-hover: #818cf8;
+  --color-text: #f9fafb;
+  --color-text-muted: #9ca3af;
+  --color-border: #374151;
+}
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
