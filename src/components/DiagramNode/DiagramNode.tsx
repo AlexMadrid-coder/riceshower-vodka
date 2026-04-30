@@ -1,9 +1,9 @@
 import { memo } from 'react';
-import { Handle, Position, type NodeProps } from '@xyflow/react';
+import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import type { DiagramNodeData } from '../../utils/flowUtils';
 import './DiagramNode.css';
 
-function DiagramNode({ data }: NodeProps<DiagramNodeData>) {
+function DiagramNode({ data }: NodeProps<Node<DiagramNodeData>>) {
   return (
     <div className="diagram-node">
       <Handle type="target" position={Position.Top} />
