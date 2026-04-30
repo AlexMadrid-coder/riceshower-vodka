@@ -115,3 +115,72 @@
   font-size: 12px;
   font-family: monospace;
 }
+
+/* Multiple axes section */
+.automation-node__axes-section {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.automation-node__axes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.automation-node__axis {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.automation-node__axis-label {
+  font-weight: 500;
+  flex: 1;
+}
+
+.automation-node__axis-remove {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.automation-node__axis-remove:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+}
+
+.automation-node__add-axis-btn {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.automation-node__add-axis-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
