@@ -7,6 +7,19 @@ export interface AutomationVariable {
   value: string | number | boolean;
 }
 
+export interface Condition {
+  variable: string;
+  operator: '==' | '!=' | '>' | '<' | '>=' | '<=';
+  value: string;
+}
+
+export interface ConditionalRule {
+  id: string;
+  label: string;
+  logicOperator: 'AND' | 'OR';
+  conditions: Condition[];
+}
+
 export interface ConnectionAxis {
   id: string;
   label: string;
@@ -23,12 +36,14 @@ export interface AutomationNodeData extends Record<string, unknown> {
   description?: string;
   // For action nodes
   actionType?: string;
-  // For condition nodes
+  // For condition nodes (legacy single condition)
   condition?: {
     variable?: string;
     operator?: string;
     value?: string;
   };
+  // For condition nodes (new rule-based system)
+  conditionalRules?: ConditionalRule[];
   // Text content for the node
   content?: string;
   // Variables used in this node

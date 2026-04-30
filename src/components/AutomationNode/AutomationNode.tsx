@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Handle, Position, type NodeProps, type Node, useReactFlow } from '@xyflow/react';
-import type { AutomationNodeData, ConnectionAxis } from '../../types/automation';
+import type { AutomationNodeData, ConnectionAxis, ConditionalRule } from '../../types/automation';
 import './AutomationNode.css';
 
 function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeData>>) {
@@ -53,6 +53,53 @@ function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeDat
     );
   };
 
+  const handleAddRule = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newRule: ConditionalRule = {
+      id: `rule-${Date.now()}`,
+      label: `Rule ${(data.conditionalRules?.length || 0) + 1}`,
+      logicOperator: 'AND',
+      conditions: [{
+        variable: '',
+        operator: '==',
+        value: '',
+      }],
+    };
+
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                conditionalRules: [...((node.data as AutomationNodeData).conditionalRules || []), newRule],
+              },
+            }
+          : node
+      )
+    );
+  };
+
+  const handleRemoveRule = (e: React.MouseEvent, ruleId: string) => {
+    e.stopPropagation();
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                conditionalRules: ((node.data as AutomationNodeData).conditionalRules || []).filter(
+                  (rule: ConditionalRule) => rule.id !== ruleId
+                ),
+              },
+            }
+          : node
+      )
+    );
+  };
+
   const getNodeIcon = () => {
     switch (data.nodeType) {
       case 'start':
@@ -97,9 +144,34 @@ function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeDat
         <div className="automation-node__desc">{data.description}</div>
       )}
 
-      {data.nodeType === 'condition' && data.condition && (
+      {data.nodeType === 'condition' && data.condition && !data.conditionalRules?.length && (
         <div className="automation-node__condition">
           {data.condition.variable} {data.condition.operator} {data.condition.value}
+        </div>
+      )}
+
+      {/* Display conditional rules for switch-case behavior */}
+      {data.nodeType === 'condition' && data.conditionalRules && data.conditionalRules.length > 0 && (
+        <div className="automation-node__rules-section">
+          {data.conditionalRules.map((rule) => (
+            <div key={rule.id} className="automation-node__rule">
+              <span className="automation-node__rule-label">{rule.label}</span>
+              <button
+                className="automation-node__rule-remove"
+                onClick={(e) => handleRemoveRule(e, rule.id)}
+                title="Remove rule"
+              >
+                ×
+              </button>
+            </div>
+          ))}
+          <button
+            className="automation-node__add-rule-btn"
+            onClick={handleAddRule}
+            title="Add conditional rule"
+          >
+            + Add Rule
+          </button>
         </div>
       )}
 
@@ -164,18 +236,50 @@ function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeDat
 
       {data.nodeType === 'condition' && (
         <>
-          <Handle
-            type="source"
-            position={Position.Top}
-            id="true"
-            style={{ left: '50%', background: '#10b981' }}
-          />
-          <Handle
-            type="source"
-            position={Position.Bottom}
-            id="false"
-            style={{ left: '50%', background: '#ef4444' }}
-          />
+          {/* If using new rule-based system, render handle for each rule */}
+          {data.conditionalRules && data.conditionalRules.length > 0 ? (
+            <>
+              {data.conditionalRules.map((rule, index) => {
+                const totalRules = data.conditionalRules?.length || 1;
+                const offset = ((index + 1) / (totalRules + 1)) * 100;
+                return (
+                  <Handle
+                    key={rule.id}
+                    type="source"
+                    position={Position.Right}
+                    id={rule.id}
+                    style={{
+                      top: `${offset}%`,
+                      background: '#10b981',
+                    }}
+                  />
+                );
+              })}
+              {/* Default/else output at the bottom */}
+              <Handle
+                type="source"
+                position={Position.Bottom}
+                id="default"
+                style={{ left: '50%', background: '#ef4444' }}
+              />
+            </>
+          ) : (
+            <>
+              {/* Legacy true/false outputs */}
+              <Handle
+                type="source"
+                position={Position.Top}
+                id="true"
+                style={{ left: '50%', background: '#10b981' }}
+              />
+              <Handle
+                type="source"
+                position={Position.Bottom}
+                id="false"
+                style={{ left: '50%', background: '#ef4444' }}
+              />
+            </>
+          )}
         </>
       )}
     </div>

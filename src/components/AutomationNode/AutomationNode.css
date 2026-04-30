@@ -184,3 +184,66 @@
   background: rgba(255, 255, 255, 0.25);
   border-color: rgba(255, 255, 255, 0.5);
 }
+
+/* Conditional rules section */
+.automation-node__rules-section {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.automation-node__rule {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 8px;
+  background: rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.automation-node__rule-label {
+  font-weight: 500;
+  flex: 1;
+}
+
+.automation-node__rule-remove {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.automation-node__rule-remove:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: white;
+}
+
+.automation-node__add-rule-btn {
+  width: 100%;
+  padding: 6px 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.automation-node__add-rule-btn:hover {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.5);
+}
