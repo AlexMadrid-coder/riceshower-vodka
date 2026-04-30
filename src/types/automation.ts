@@ -7,6 +7,16 @@ export interface AutomationVariable {
   value: string | number | boolean;
 }
 
+export interface ConnectionAxis {
+  id: string;
+  label: string;
+  rules?: {
+    variable?: string;
+    operator?: string;
+    value?: string;
+  }[];
+}
+
 export interface AutomationNodeData extends Record<string, unknown> {
   label: string;
   nodeType: NodeType;
@@ -23,4 +33,7 @@ export interface AutomationNodeData extends Record<string, unknown> {
   content?: string;
   // Variables used in this node
   usedVariables?: string[];
+  // Multiple connection axes feature
+  allowMultipleAxes?: boolean;
+  connectionAxes?: ConnectionAxis[];
 }

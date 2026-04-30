@@ -1,15 +1,58 @@
 import { memo } from 'react';
 import { Handle, Position, type NodeProps, type Node, useReactFlow } from '@xyflow/react';
-import type { AutomationNodeData } from '../../types/automation';
+import type { AutomationNodeData, ConnectionAxis } from '../../types/automation';
 import './AutomationNode.css';
 
 function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeData>>) {
-  const { deleteElements } = useReactFlow();
+  const { deleteElements, setNodes } = useReactFlow();
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     deleteElements({ nodes: [{ id }] });
   };
+
+  const handleAddAxis = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const newAxis: ConnectionAxis = {
+      id: `axis-${Date.now()}`,
+      label: `Rule ${(data.connectionAxes?.length || 0) + 1}`,
+      rules: [],
+    };
+
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                connectionAxes: [...((node.data as AutomationNodeData).connectionAxes || []), newAxis],
+              },
+            }
+          : node
+      )
+    );
+  };
+
+  const handleRemoveAxis = (e: React.MouseEvent, axisId: string) => {
+    e.stopPropagation();
+    setNodes((nds) =>
+      nds.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              data: {
+                ...node.data,
+                connectionAxes: ((node.data as AutomationNodeData).connectionAxes || []).filter(
+                  (axis: ConnectionAxis) => axis.id !== axisId
+                ),
+              },
+            }
+          : node
+      )
+    );
+  };
+
   const getNodeIcon = () => {
     switch (data.nodeType) {
       case 'start':
@@ -64,8 +107,59 @@ function AutomationNode({ data, selected, id }: NodeProps<Node<AutomationNodeDat
         <div className="automation-node__action-type">{data.actionType}</div>
       )}
 
+      {/* Multiple axes feature for action and condition nodes */}
+      {data.allowMultipleAxes && (
+        <div className="automation-node__axes-section">
+          {data.connectionAxes && data.connectionAxes.length > 0 && (
+            <div className="automation-node__axes-list">
+              {data.connectionAxes.map((axis) => (
+                <div key={axis.id} className="automation-node__axis">
+                  <span className="automation-node__axis-label">{axis.label}</span>
+                  <button
+                    className="automation-node__axis-remove"
+                    onClick={(e) => handleRemoveAxis(e, axis.id)}
+                    title="Remove axis"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+          <button
+            className="automation-node__add-axis-btn"
+            onClick={handleAddAxis}
+            title="Add connection axis"
+          >
+            + Add Rule
+          </button>
+        </div>
+      )}
+
       {data.nodeType !== 'end' && (
         <Handle type="source" position={Position.Right} />
+      )}
+
+      {/* Render custom handles for connection axes */}
+      {data.allowMultipleAxes && data.connectionAxes && data.connectionAxes.length > 0 && (
+        <>
+          {data.connectionAxes.map((axis, index) => {
+            const totalAxes = data.connectionAxes?.length || 1;
+            const offset = ((index + 1) / (totalAxes + 1)) * 100;
+            return (
+              <Handle
+                key={axis.id}
+                type="source"
+                position={Position.Right}
+                id={axis.id}
+                style={{
+                  top: `${offset}%`,
+                  background: '#8b5cf6',
+                }}
+              />
+            );
+          })}
+        </>
       )}
 
       {data.nodeType === 'condition' && (

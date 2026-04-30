@@ -118,6 +118,8 @@ function AutomationFlowPageContent() {
             operator: '==',
             value: 'true',
           } : undefined,
+          allowMultipleAxes: nodeType === 'action' || nodeType === 'condition',
+          connectionAxes: [],
         },
       };
 
@@ -158,6 +160,8 @@ function AutomationFlowPageContent() {
           operator: '==',
           value: 'true',
         } : undefined,
+        allowMultipleAxes: nodeType === 'action' || nodeType === 'condition',
+        connectionAxes: [],
       },
     };
 
