@@ -1,0 +1,123 @@
+.automation-flow-page {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  background: #ffffff;
+}
+
+.automation-flow-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.automation-flow-page__header {
+  padding: 20px 24px;
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.automation-flow-page__title {
+  margin: 0 0 4px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.automation-flow-page__subtitle {
+  margin: 0;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.automation-flow-page__stats {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+
+.automation-flow-page__stat {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.automation-flow-page__stat strong {
+  font-size: 20px;
+  color: #111827;
+  margin-right: 4px;
+}
+
+.automation-flow-page__canvas {
+  flex: 1;
+  position: relative;
+  background: #fafafa;
+}
+
+/* React Flow customizations */
+.react-flow__node {
+  cursor: grab;
+}
+
+.react-flow__node.selected {
+  box-shadow: none;
+}
+
+.react-flow__handle {
+  width: 10px;
+  height: 10px;
+  background: #3b82f6;
+  border: 2px solid white;
+}
+
+.react-flow__handle-top {
+  top: -5px;
+}
+
+.react-flow__handle-bottom {
+  bottom: -5px;
+}
+
+.react-flow__handle-left {
+  left: -5px;
+}
+
+.react-flow__handle-right {
+  right: -5px;
+}
+
+.react-flow__edge-path {
+  stroke: #3b82f6;
+  stroke-width: 2;
+}
+
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #2563eb;
+  stroke-width: 3;
+}
+
+.react-flow__controls {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.react-flow__controls-button {
+  background: white;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 8px;
+}
+
+.react-flow__controls-button:hover {
+  background: #f9fafb;
+}
+
+.react-flow__minimap {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  overflow: hidden;
+}
